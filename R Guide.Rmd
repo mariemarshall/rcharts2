@@ -1,0 +1,339 @@
+---
+output: word_document
+---
+
+##Marie Marshall
+###9/20/2014
+
+
+#Guide To Using Base R 
+
+#What is R?
+R is a free software environment for statistical computing and graphics. R provides a wide variety of statistical (linear and nonlinear modelling, classical statistical tests, time-series analysis, classification, clustering, ...) and graphical techniques.
+
+#How to Use R
+
+#### 1) Choose Output Options
+R Markdown documents can contain a metadata section that includes both title, author, and date information as well as options for customizing output.Also, R Markdown has built in support for several output formats (HTML, PDF, and MS Word documents as well as Beamer presentations)
+
+#### 2)Initialize The Iibraries
+Add the external community-developed libraries you will be analyzing 
+
+####3)Determine Data Type/ Simulate Data
+There are different types of variables: Factor and Numerical
+
+######Factor data
+Consists of names representing categories. 
+Example: 
+The gender categories  (male & female) of the people where you work or go to school; or the make of cars in the parking lot (categories of Ford, GM, Toyota, Mazda, KIA, etc) is factor data. 
+
+######Numerical data 
+Consists of numbers that represent counts or measurements. 
+Example:
+The number of males & females where you work or go to school; or the number of the make of cars Ford, GM, Toyota, Mazda, KIA, etc is numerical data.
+```{r, echo=FALSE}
+## 3 Factor Variables
+FacVar1=as.factor(rep(c("level1","level2"),25))
+FacVar2=as.factor(rep(c("levelA","levelB","levelC"),17)[-51])
+FacVar3=as.factor(rep(c("levelI","levelII","levelIII","levelIV"),13)[-c(51:52)])
+
+## 4 Numeric Vars
+set.seed(123)
+NumVar1=round(rnorm(n=50,mean=1000,sd=50),digits=2) ## Normal distribution
+set.seed(123)
+NumVar2=round(runif(n=50,min=500,max=1500),digits=2) ## Uniform distribution
+set.seed(123)
+NumVar3=round(rexp(n=50,rate=.001)) ## Exponential distribution
+NumVar4=2001:2050
+simData=data.frame(FacVar1,FacVar2,FacVar3,NumVar1,NumVar2,NumVar3,NumVar4) 
+```
+
+
+#### 4) Create Graph
+##One Variable
+###Numberic Variable
+
+####Histogram 
+A histogram is a graphical representation of the distribution of data. It is an estimate of the probability distribution of a numeric variable.
+
+
+```{r, echo=FALSE}
+hist(simData$NumVar1) 
+```
+
+####Kernel Density Plot
+This graph is a way to estimate the probability density function of a numeric variable.
+
+
+```{r, echo=FALSE}
+plot(density(simData$NumVar1))
+```
+
+####Box Plot
+A boxplot is a convenient way of graphically depicting groups of numerical data through their quartiles. The lines extending vertically from the boxes indicate variability outside the upper and lower quartiles.Outliers may be plotted as individual points.
+
+
+```{r,echo=FALSE}
+boxplot(simData$NumVar1)
+```
+
+####Index Plot 
+An index plot is a scatterplot of data plotted serially against the observation/case number within the sample.
+
+
+```{r,echo=FALSE}
+plot(simData$NumVar1,type="o")
+```
+
+###Factor Variable
+
+####Barplot
+A bar plot displays the frequency for all observations of a factor variable. (You can create a bar plot with vertical or horizontal bars)
+
+
+```{r,echo=FALSE}
+plot(simData$FacVar3)
+```
+
+
+####Pie Chart
+A pie chart is a circular chart divided into sectors, each sector shows the relative size of each factor. A pie chart should rarley be used becuase individuals have a hard time determining the size differences of the sections.
+
+#####For Getting Counts Enter:
+counts=table(simData$FacVar3)
+
+#####To Create Tables Enter:
+labs=paste(simData$FacVar3,counts)
+
+#####To Plot Enter:
+pie(counts,labels=labs) 
+
+
+```{r, echo=FALSE}
+counts=table(simData$FacVar3) 
+labs=paste(simData$FacVar3,counts)
+pie(counts,labels=labs) 
+
+```
+
+##Plotting Two Variables
+###Two Numeric Variables
+####Index Plot
+An index plot is a scatterplot of data plotted serially against the observation/case number within the sample.
+
+#####To plot and index plot with one variable enter: 
+plot(simData$NumVar1,type="o",ylim=c(0,max(simData$NumVar1,simData$NumVar2)))
+
+#####To add another variable enter:
+lines(simData$NumVar2,type="o",lty=2,col="red")
+
+
+```{r, echo=FALSE}
+plot(simData$NumVar1,type="o",ylim=c(0,max(simData$NumVar1,simData$NumVar2)))
+lines(simData$NumVar2,type="o",lty=2,col="red")
+```
+
+
+
+
+
+####Density Plot
+
+```{r, echo=FALSE}
+dv1=density(simData$NumVar1) 
+dv2=density(simData$NumVar2)
+plot(range(dv1$x, dv2$x),range(dv1$y, dv2$y), type = "n", xlab = "NumVar1(red) and NumVar2 (blue)",
+     ylab = "Density")
+lines(dv1, col = "red")
+lines(dv2, col = "blue")
+```
+
+####Scatter Plot
+A scatter plot is a graph of plotted points that show the relationship between two sets of numeric data.The pattern of the resulting points revealing any correlation present
+
+
+```{r, echo=FALSE}
+plot(simData$NumVar1,simData$NumVar2)
+```
+
+###Two Factor Variables
+
+####Mosaic Plot
+The mosaic plot starts as a square with length one. The square is divided first into 
+horizontal bars whose widths are proportional to the probabilities associated with the first factor variable. Then each bar is split vertically into bars that are proportional to the conditional probabilities of the second factor variable. (Additional splits can be made 
+if wanted using a third, fourth variable, etc.) 
+
+
+```{r, echo=FALSE}
+plot(table(simData$FacVar2,simData$FacVar3))
+```
+
+####Barplots
+
+#####To get the cross tab enter: 
+bartable=table(simData$FacVar2,simData$FacVar3) 
+
+##### To Plot Enter:
+barplot(bartable,beside=TRUE, legend=levels(unique(simData$FacVar2)))
+
+```{r, echo=FALSE}
+bartable=table(simData$FacVar2,simData$FacVar3) 
+barplot(bartable,beside=TRUE, legend=levels(unique(simData$FacVar2))) 
+```
+
+####Stacked Barplot
+
+
+```{r, echo=FALSE}
+barplot(bartable, legend=levels(unique(simData$FacVar2))) ## stacked
+```
+
+####100% Stacked Barplot
+
+
+```{r, echo=FALSE}
+barplot(prop.table(bartable,2)*100, legend=levels(unique(simData$FacVar2))) 
+```
+
+###One Factor and One Numeric
+####Boxplot
+
+
+```{r, echo=FALSE}
+plot(simData$FacVar1,simData$NumVar1)
+```
+
+
+
+####Density Plot
+
+
+```{r, echo=FALSE}
+level1=simData[simData$FacVar1=="level1",] 
+level2=simData[simData$FacVar1=="level2",]
+
+dv3=density(level1$NumVar1)
+dv4=density(level2$NumVar1)
+
+plot(range(dv3$x, dv4$x),range(dv3$y, dv4$y), type = "n", xlab = "NumVar1 at Level1 (red) and NumVar1 at Level2 (blue)",ylab = "Density")
+lines(dv3, col = "red")
+lines(dv4, col = "blue")
+```
+
+####Dot Chart
+
+
+```{r, echo=FALSE}
+meanagg=aggregate(simData$NumVar1, list(simData$FacVar3), mean)
+dotchart(meanagg$x,labels=meanagg$Group.1) 
+```
+
+
+####Bar Plot
+
+
+```{r, echo=FALSE}
+barplot(meanagg$x,names.arg=meanagg$Group.1)
+```
+
+
+
+##Three Variables
+###Three Factor Variables
+
+```{r, echo=FALSE}
+par(mfrow=c(1,2))
+
+bar1table=table(level1$FacVar2,level1$FacVar3)
+barplot(bar1table,beside=TRUE, main="FacVar1=level1")
+
+bar2table=table(level2$FacVar2,level2$FacVar3)
+barplot(bar2table,beside=TRUE, main="FacVar1=level2", legend=levels(unique(level2$FacVar2)))
+```
+
+###One Numeric and Two Factor Variables
+#### Boxplot 
+(NumVar1 over an interaction of 6 levels of the combination of FacVar1 and FacVar2)
+
+
+```{r, echo=FALSE}
+par(mfrow=c(1,1))
+
+boxplot(NumVar1~interaction(FacVar1,FacVar2),data=simData)
+```
+
+#### Dot Chart
+(Mean of 1 Numeric over levels of two factor vars)
+
+
+```{r, echo=FALSE}
+meanaggg=aggregate(simData$NumVar1, list(simData$FacVar1,simData$FacVar2), mean)
+meanaggg=meanaggg[order(meanaggg$Group.1),]
+meanaggg$color[meanaggg$Group.2=="levelA"] = "red"
+meanaggg$color[meanaggg$Group.2=="levelB"] = "blue"
+meanaggg$color[meanaggg$Group.2=="levelC"] = "darkgreen"  
+
+dotchart(meanaggg$x,labels=meanaggg$Group.2, groups=meanaggg$Group.1,color=meanaggg$color) 
+```
+
+####Interaction Chart
+An interaction chart plots the mean (or other summary) of the response for a combination of factors, thereby illustrating possible interactions.
+
+
+```{r, echo=FALSE}
+interaction.plot(meanaggg$Group.2,meanaggg$Group.1,meanaggg$x,type="b", col=c(1:2),pch=c(18,24)) 
+```
+
+#### Some A Bar Plot
+
+
+```{r, echo=FALSE}
+par(mfrow=c(1,2))
+
+level1=meanaggg[meanaggg$Group.1=="level1",]
+level2=meanaggg[meanaggg$Group.1=="level2",]
+
+barplot(level1$x,names.arg=level1$Group.2, main="FacVar1=level1")
+barplot(level2$x,names.arg=level2$Group.2, main="FacVar1=level2")
+```
+
+###Two Numeric and One Factor Variables
+#### Scatter Plo(with color identifying the factor variable)
+
+
+```{r, echo=FALSE}
+par(mfrow=c(1,1))
+plot(simData$NumVar1,simData$NumVar2, col=simData$FacVar1)
+legend("topright",levels(simData$FacVar1),fill=simData$FacVar1)
+```
+
+###Three Numeric Variables
+
+##### To Join Dots With the Lines Enter:
+plot(simData$NumVar4,simData$NumVar1,type="o",ylim=c(0,max(simData$NumVar1,simData$NumVar2)))
+
+##### To Add Another Line Enter:
+lines(simData$NumVar4,simData$NumVar2,type="o",lty=2,col="red")
+
+```{r, echo=FALSE}
+plot(simData$NumVar4,simData$NumVar1,type="o",ylim=c(0,max(simData$NumVar1,simData$NumVar2)))## join dots with lines
+
+lines(simData$NumVar4,simData$NumVar2,type="o",lty=2,col="red")
+```
+
+#### Bubble plot 
+A bubble chart is a type of chart that displays three dimensions of data. Each entity with its triplet of associated data is plotted as a disk that expresses two of the values. Then, through the disk's xy location and the third through its size.
+
+
+```{r, echo=FALSE}
+radius <- sqrt( simData$NumVar3/ pi )
+symbols(simData$NumVar1,simData$NumVar2,circles=radius, inches=.25,fg="white", bg="red", main="Sized by NumVar3")
+```
+
+####Scatterplot Matrix of All Numeric Vars (colored by a Factor variable)
+
+
+```{r, echo=FALSE}
+pairs(simData[,4:7], col=simData$FacVar1)
+```
+
